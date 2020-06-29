@@ -10,11 +10,12 @@ def load_image(image_path):
         image_path: Path of the image to be loaded
 
     Returns:
-        Tensor of the image
+        Tensor image of shape [1,H,W,3]
     """
     image = tf.io.read_file(image_path)
     image = tf.image.decode_image(image, channels=3)
     image = tf.image.convert_image_dtype(image, tf.float32)
+    image = tf.expand_dims(image, 0)
     return image
 
 
