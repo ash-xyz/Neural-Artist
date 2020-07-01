@@ -21,18 +21,18 @@ def loss_network():
 
     Returns:
         model: keras Model based on VGG 19 that returns multiple outputs
-        divider: numerical divider for the output list, [:divider] are the content layers, [divider:] are the style layers
-        weights: Weights for each layer in style
+        len_content: length of the content layers
+        len_style: length of the style layers
     """
     cnn = tf.keras.applications.VGG19(
         include_top=False, weights='imagenet', pooling="avg")
-    content_layers = ['block4_conv2']
+    content_layers = ['block5_conv2']
     style_layers = [
         'block1_conv1', 'block2_conv1', 'block3_conv1', 'block4_conv1', 'block5_conv1'
     ]
-    weights = [0.2, 0.2, 0.2, 0.2, 0.2]
     layers = content_layers+style_layers
     outputs = [cnn.get_layer(name).output for name in layers]
     model = tf.keras.Model(inputs=cnn.input, outputs=outputs)
-    divider = len(content_layers)
-    return model, divider, weights
+    len_content = len(content_layers)
+    len_styles = len(style_layers)
+    return model, len_content, len_styles
