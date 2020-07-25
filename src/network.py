@@ -1,52 +1,6 @@
 from utilities import *
 import tensorflow as tf
 
-
-class ContentLoss:
-    def __init__(self, target):
-        super().__init__()
-        self.target = target
-
-    def forward(self, input):
-        self.loss = 0
-        for i in range(len(input)):
-            self.loss += tf.reduce_mean(
-                tf.square(input[i]-self.target[i]))
-        return self.loss
-
-
-def gram_matrix(features):
-    """Computes the Gram matrix from features
-
-    Args:
-        features: A list of Tensors of shape [1, H, W, C]
-
-    Returns:
-        Gram matrix: A list of Tensors of shape [C, C]
-    """
-    gram = []
-    for i in range(len(features)):
-        _, H, W, C = tf.shape(features[i])
-        gram.append(tf.linalg.einsum(
-            'bijc,bijd->bcd', features[i], features[i])/tf.cast(C, tf.float32))
-    return gram
-
-
-class StyleLoss:
-    def __init__(self, target):
-        super().__init__()
-        gram = gram_matrix(target)
-        self.target_gram = gram
-
-    def forward(self, input):
-        input_gram = gram_matrix(input)
-        self.loss = 0
-        for i in range(len(input_gram)):
-            self.loss += tf.reduce_mean(
-                tf.square(input_gram[i]-self.target_gram[i]))
-        return self.loss/len(input)
-
-
 def loss_network():
     """Generates a loss network
 
