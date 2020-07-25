@@ -1,5 +1,5 @@
 import tensorflow as tf
-from src.hyperparameters import CONTENT_LAYERS, STYLE_LAYERS
+from .hyperparameters import CONTENT_LAYERS, STYLE_LAYERS
 """
 File that contains the loss and style networks
 """
