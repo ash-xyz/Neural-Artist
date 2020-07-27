@@ -3,6 +3,7 @@ Scripts to create exploratory and results oriented visualizations
 """
 import matplotlib.pyplot as plt
 import seaborn as sns
+import tensorflow as tf
 
 
 def graph_history(content_history, style_history):
@@ -22,3 +23,17 @@ def graph_history(content_history, style_history):
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.show
+
+
+def show_image(image, title):
+    """Shows image using matplotlib
+
+    Args:
+        image: Tensor with a shape greater than 3
+        title: Name of the image
+    """
+    if(len(image.shape) > 3):
+        image = tf.squeeze(image, axis=0)
+    plt.imshow(image)
+    if title:
+        plt.title(title)
