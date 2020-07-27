@@ -1,6 +1,6 @@
 from .utilities import *
 from .network import *
-from .hyperparameters import *
+from .config import *
 from .visualization.visualize import *
 import tensorflow as tf
 import numpy as np
