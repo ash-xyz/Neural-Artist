@@ -25,7 +25,7 @@ def graph_history(content_history, style_history):
     plt.show
 
 
-def show_image(image, title):
+def show_image(image, title=None):
     """Shows image using matplotlib
 
     Args:

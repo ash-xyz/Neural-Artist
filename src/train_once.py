@@ -1,57 +1,49 @@
-from .utilities import *
-from .network import *
-from .config import *
-from .visualization.visualize import *
 import tensorflow as tf
 import numpy as np
+from src.utilities import *
+from src.network import loss_network
+from src.config import CONTENT_LAYERS, ITERATIONS, CONTENT_WEIGHT, STYLE_WEIGHT, TV_WEIGHT
+from src.visualization.visualize import show_image
 
 
-def generate_pastische(style_path, content_path, ipython=False):
-    model = loss_network()
+def generate_pastische(content_path, style_path):
     content_image = load_image(content_path)
-    content_loss = ContentLoss(
-        model(content_image)[:len(CONTENT_LAYERS)])
-    style_loss = StyleLoss(
-        model(load_image(style_path))[len(CONTENT_LAYERS):])
+    preprocessed_content = tf.keras.applications.vgg19.preprocess_input(
+        content_image)
+    style_image = load_image(style_path)
+    preprocessed_style = tf.keras.applications.vgg19.preprocess_input(
+        style_image)
 
-    num_iter = 5
-    content_weight = 5e0
-    style_weight = 1e3
-    tv_weight = 1e-2
-    learning_rate = 1e-3
-    norm_means = np.array([103.939, 116.779, 123.68])
-    min_vals = -1 * norm_means
-    max_vals = 255 - norm_means
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    lossNetwork = loss_network()
+    content_features = lossNetwork(preprocessed_content)[:len(CONTENT_LAYERS)]
+    style_features = lossNetwork(preprocessed_style)[len(CONTENT_LAYERS):]
+    content_loss = ContentLoss(content_features)
+    style_loss = StyleLoss(style_features)
+
+    optimizer = tf.optimizers.Adam(
+        learning_rate=0.02, beta_1=0.99, epsilon=1e-1)
 
     pastische = tf.Variable(content_image)
-    best_img = tf.Variable(content_image)
-    content_history = []
-    style_history = []
-    for i in range(num_iter):
-        best_loss = 1e50
+    for i in range(ITERATIONS):
         with tf.GradientTape() as tape:
             tape.watch(pastische)
-            features = model(pastische)
-            content_features = features[:len(CONTENT_LAYERS)]
-            style_features = features[len(CONTENT_LAYERS):]
-            c_loss = content_loss.forward(content_features)
-            s_loss = style_loss.forward(style_features)
-            tv_loss = tf.image.total_variation(pastische)
-            loss = content_weight * c_loss+style_weight*s_loss + tv_weight*tv_loss
-        grad = tape.gradient(loss, pastische)
+            pastische_processed = tf.keras.applications.vgg19.preprocess_input(
+                pastische)
+            pastische_features = lossNetwork(pastische_processed)
+            pastische_content = pastische_features[:len(CONTENT_LAYERS)]
+            pastische_style = pastische_features[len(CONTENT_LAYERS):]
+            c_loss = CONTENT_WEIGHT * content_loss.forward(pastische_content)
+            s_loss = STYLE_WEIGHT * style_loss.forward(pastische_style)
+            tv_loss = TV_WEIGHT * tf.image.total_variation(pastische)
+            total_loss = c_loss + s_loss + tv_loss
+        grad = tape.gradient(total_loss, pastische)
         optimizer.apply_gradients([(grad, pastische)])
-        clipped = tf.clip_by_value(pastische, min_vals, max_vals)
-        pastische.assign(clipped)
-        if(loss < best_loss):
-            best_img = pastische
-        # TODO: FIX SO THAT IT SHOWS ON IPYTHON
-        if(ipython == True):
-            content_history.append(style_loss.loss)
-            style_history.append(content_loss.loss)
-            graph_history(content_history, style_history)
+        pastische.assign(clip_0_1(pastische))
+        if(i % 50 == 0 or i == ITERATIONS-1):
+            print(f"{i} - Content Loss: {c_loss} Style_loss: {s_loss}")
+            show_image(pastische)
+    return pastische
 
-        if(i % 50 == 0 or i == 999):
-            print(
-                f"Iterations: {i} Style Loss {style_loss.loss} Content Loss {content_loss.loss}")
-    return best_img
+
+def clip_0_1(image):
+    return tf.clip_by_value(image, clip_value_min=0.0, clip_value_max=1.0)
