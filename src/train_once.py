@@ -2,7 +2,7 @@ import tensorflow as tf
 import numpy as np
 from src.utilities import *
 from src.network import loss_network
-from src.config import CONTENT_LAYERS, ITERATIONS, CONTENT_WEIGHT, STYLE_WEIGHT, TV_WEIGHT
+from src.config import CONTENT_LAYERS, STYLE_LAYERS, ITERATIONS, CONTENT_WEIGHT, STYLE_WEIGHT, TV_WEIGHT
 from src.visualization.visualize import show_image
 
 
@@ -14,7 +14,7 @@ def generate_pastische(content_path, style_path):
     preprocessed_style = tf.keras.applications.vgg19.preprocess_input(
         style_image)
 
-    lossNetwork = loss_network()
+    lossNetwork = loss_network(CONTENT_LAYERS, STYLE_LAYERS)
     content_features = lossNetwork(preprocessed_content)[:len(CONTENT_LAYERS)]
     style_features = lossNetwork(preprocessed_style)[len(CONTENT_LAYERS):]
     content_loss = ContentLoss(content_features)
