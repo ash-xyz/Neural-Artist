@@ -26,7 +26,7 @@ def load_and_process_image(path_to_image):
 
 
 def deprocess_image(processed_image):
-    x = processed_image.copy()
+    x = tf.Variable(processed_image)
     if len(x.shape) == 4:
         x = np.squeeze(x, 0)
     assert len(x.shape) == 3, ("Input to deprocess image must be an image of "
