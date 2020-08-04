@@ -10,7 +10,7 @@ def show_image(tensor, title=None):
         tensor: A tensor image of shape (1,ch,h,w)
         title: (optional) Title of the plot
     """
-    image = tensor.cpu.clone()
+    image = tensor.clone()
     image = image.squeeze(0)
     image = transforms.ToPILImage()(image)
     plt.imshow(image)
