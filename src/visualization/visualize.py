@@ -1,39 +1,19 @@
-"""
-Scripts to create exploratory and results oriented visualizations
-"""
+import torch
+from PIL import Image
+import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
-import seaborn as sns
-import tensorflow as tf
 
 
-def graph_history(content_history, style_history):
-    """Graphs history using matplotlib and seaborn
-
-    Requirements:
-        len(content_history) = len(style_history)
+def show_image(tensor, title=None):
+    """ Plots a tensor image using pyplot
     Args:
-        content_history: history of loss for the content
-        style_history: history of loss for the style
+        tensor: A tensor image of shape (1,ch,h,w)
+        title: (optional) Title of the plot
     """
-    sns.set(style='darkgrid')
-    epoch = range(1, len(content_history) + 1)
-    plt.plot(epoch, content_history)
-    plt.plot(epoch, style_history)
-    plt.legend(['Content Loss', 'Style Loss'])
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.show
-
-
-def show_image(image, title=None):
-    """Shows image using matplotlib
-
-    Args:
-        image: Tensor with a shape greater than 3
-        title: Name of the image
-    """
-    if(len(image.shape) > 3):
-        image = tf.squeeze(image, axis=0)
+    image = tensor.cpu.clone()
+    image = image.squeeze(0)
+    image = transforms.ToPILImage()(image)
     plt.imshow(image)
     if title:
         plt.title(title)
+    plt.pause(0.01)
