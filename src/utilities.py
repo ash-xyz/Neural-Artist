@@ -11,7 +11,6 @@ def load_image(image_path):
         image: An image tensor
     """
     image = Image.open(image_path)
-    #TODO: Scale to 255 without fucking with the colours transforms.Lambda(lambda x: x.mul(255))])
     loader = transforms.Compose([
         transforms.ToTensor()])
     image = loader(image).unsqueeze(0)
