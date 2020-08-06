@@ -4,92 +4,97 @@ from torchvision.transforms import transforms
 
 
 class LossNet(torch.nn.Module):
-    def __init__(self, requires_grad=False):
+    def __init__(self, style_layers=[], content_layers=[], requires_grad=False):
         # Inspired by https://github.com/pytorch/examples/tree/master/fast_neural_style/vgg.py Changes: Replaced VGG16 with 19, replaced relu with conv
         super(LossNet, self).__init__()
         vgg = models.vgg19(pretrained=True).features
-        self.normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                              std=[0.229, 0.224, 0.225])
+
+        self.style_layers = style_layers
+        self.content_layers = content_layers
+
+        norm = Normalization()
+        self.layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1',
+                       'conv3_2', 'conv3_3', 'conv3_4', 'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4']
+
         self.model = {}
-        self.model['conv1_1'] = torch.nn.Sequential()
-        self.model['conv1_2'] = torch.nn.Sequential()
+        self.model[self.layers[0]] = torch.nn.Sequential(norm)
+        self.model[self.layers[1]] = torch.nn.Sequential()
 
-        self.model['conv2_1'] = torch.nn.Sequential()
-        self.model['conv2_2'] = torch.nn.Sequential()
+        self.model[self.layers[2]] = torch.nn.Sequential()
+        self.model[self.layers[3]] = torch.nn.Sequential()
 
-        self.model['conv3_1'] = torch.nn.Sequential()
-        self.model['conv3_2'] = torch.nn.Sequential()
-        self.model['conv3_3'] = torch.nn.Sequential()
-        self.model['conv3_4'] = torch.nn.Sequential()
+        self.model[self.layers[4]] = torch.nn.Sequential()
+        self.model[self.layers[5]] = torch.nn.Sequential()
+        self.model[self.layers[6]] = torch.nn.Sequential()
+        self.model[self.layers[7]] = torch.nn.Sequential()
 
-        self.model['conv4_1'] = torch.nn.Sequential()
-        self.model['conv4_2'] = torch.nn.Sequential()
-        self.model['conv4_3'] = torch.nn.Sequential()
-        self.model['conv4_4'] = torch.nn.Sequential()
+        self.model[self.layers[8]] = torch.nn.Sequential()
+        self.model[self.layers[9]] = torch.nn.Sequential()
+        self.model[self.layers[10]] = torch.nn.Sequential()
+        self.model[self.layers[11]] = torch.nn.Sequential()
 
-        self.model['conv1_1'].add_module(str(0), vgg[0])
+        # Block 1
+        self.model[self.layers[0]].add_module(str(0), vgg[0])
         for x in range(1, 3):
-            self.model['conv1_2'].add_module(str(x), vgg[x])
+            self.model[self.layers[1]].add_module(str(x), vgg[x])
 
+        # Block 2
         for x in range(3, 6):
-            self.model['conv2_1'].add_module(str(x), vgg[x])
+            self.model[self.layers[2]].add_module(str(x), vgg[x])
         for x in range(6, 8):
-            self.model['conv2_2'].add_module(str(x), vgg[x])
+            self.model[self.layers[3]].add_module(str(x), vgg[x])
 
+        # Block 3
         for x in range(8, 11):
-            self.model['conv3_1'].add_module(str(x), vgg[x])
+            self.model[self.layers[4]].add_module(str(x), vgg[x])
         for x in range(11, 13):
-            self.model['conv3_2'].add_module(str(x), vgg[x])
+            self.model[self.layers[5]].add_module(str(x), vgg[x])
         for x in range(13, 15):
-            self.model['conv3_3'].add_module(str(x), vgg[x])
+            self.model[self.layers[6]].add_module(str(x), vgg[x])
         for x in range(15, 17):
-            self.model['conv3_4'].add_module(str(x), vgg[x])
+            self.model[self.layers[7]].add_module(str(x), vgg[x])
 
+        # Block 4
         for x in range(17, 20):
-            self.model['conv4_1'].add_module(str(x), vgg[x])
+            self.model[self.layers[8]].add_module(str(x), vgg[x])
         for x in range(20, 22):
-            self.model['conv4_2'].add_module(str(x), vgg[x])
+            self.model[self.layers[9]].add_module(str(x), vgg[x])
         for x in range(22, 24):
-            self.model['conv4_3'].add_module(str(x), vgg[x])
+            self.model[self.layers[10]].add_module(str(x), vgg[x])
         for x in range(24, 26):
-            self.model['conv4_4'].add_module(str(x), vgg[x])
+            self.model[self.layers[11]].add_module(str(x), vgg[x])
 
         if not requires_grad:
             for param in self.parameters():
                 param.requires_grad = False
 
     def forward(self, input_image):
-        # Image net normalization
-        normalized_input = self.normalize(input_image)
 
-        outputs = {}
+        style_outputs = {}
+        content_outputs = {}
 
-        h = self.model['conv1_1'](normalized_input)
-        outputs['conv1_1'] = h
-        h = self.model['conv1_2'](h)
-        outputs['conv1_2'] = h
+        h = self.model['conv1_1'](input_image)
+        for i in range(1, len(self.layers)):
+            h = self.model[self.layers[i]](h)
+            if(self.layers[i] in self.style_layers):
+                style_outputs[self.layers[i]] = h
+            if(self.layers[i] in self.content_layers):
+                content_outputs[self.layers[i]] = h
 
-        h = self.model['conv2_1'](h)
-        outputs['conv2_1'] = h
-        h = self.model['conv2_2'](h)
-        outputs['conv2_2'] = h
+        return style_outputs, content_outputs
 
-        h = self.model['conv3_1'](h)
-        outputs['conv3_1'] = h
-        h = self.model['conv3_2'](h)
-        outputs['conv3_2'] = h
-        h = self.model['conv3_3'](h)
-        outputs['conv3_3'] = h
-        h = self.model['conv3_4'](h)
-        outputs['conv3_4'] = h
 
-        h = self.model['conv4_1'](h)
-        outputs['conv4_1'] = h
-        h = self.model['conv4_2'](h)
-        outputs['conv4_2'] = h
-        h = self.model['conv4_3'](h)
-        outputs['conv4_3'] = h
-        h = self.model['conv4_4'](h)
-        outputs['conv4_4'] = h
+class Normalization(torch.nn.Module):
+    """Normalizes a batch with imagenet means"""
+    # Taken and adapted from the pytorch Neural Style Tutorial: https://pytorch.org/tutorials/advanced/neural_style_tutorial.html
 
-        return outputs
+    def __init__(self):
+        super(Normalization, self).__init__()
+        mean = torch.tensor([0.485, 0.456, 0.406])
+        std = torch.tensor([0.229, 0.224, 0.225])
+        self.mean = torch.tensor(mean).view(-1, 1, 1)
+        self.std = torch.tensor(std).view(-1, 1, 1)
+
+    def forward(self, img):
+        # normalize img
+        return (img - self.mean) / self.std
