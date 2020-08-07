@@ -3,9 +3,10 @@ import torch
 from torchvision.transforms import transforms
 
 
+
 class LossNet(torch.nn.Module):
     def __init__(self, style_layers=[], content_layers=[], requires_grad=False):
-        # Inspired by https://github.com/pytorch/examples/tree/master/fast_neural_style/vgg.py Changes: Replaced VGG16 with 19, replaced relu with conv
+        # Inspired by https://github.com/pytorch/examples/tree/master/fast_neural_style/vgg.py Changes: Replaced VGG16 with 19, replaced relu with conv, allow you to choose your output layers
         super(LossNet, self).__init__()
         vgg = models.vgg19(pretrained=True).features
 
@@ -16,7 +17,7 @@ class LossNet(torch.nn.Module):
         self.layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1',
                        'conv3_2', 'conv3_3', 'conv3_4', 'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4']
 
-        self.model = {}
+        self.model = torch.nn.ModuleDict({}) # if you use a regular dict, it won't be properly registered
         self.model[self.layers[0]] = torch.nn.Sequential(norm)
         self.model[self.layers[1]] = torch.nn.Sequential()
 
@@ -68,17 +69,26 @@ class LossNet(torch.nn.Module):
             for param in self.parameters():
                 param.requires_grad = False
 
-    def forward(self, input_image):
-
+    def forward(self, input_image, request_style=True, request_content=True):
+        """Does a forward pass through the VGG network
+        Args:
+            input_image: image to be passed through the network
+            request_style: Returns a style output if true
+            request_content: Returns a content output if true
+        Returns:
+            style_outputs: A dictionary of the outputs of the style layers, empty if not requested
+            content_outputs: A dictionary of the outputs of the content layers, empty if not requested
+        """
         style_outputs = {}
         content_outputs = {}
 
         h = self.model['conv1_1'](input_image)
+        # Loops through styles
         for i in range(1, len(self.layers)):
             h = self.model[self.layers[i]](h)
-            if(self.layers[i] in self.style_layers):
+            if(request_style and self.layers[i] in self.style_layers):
                 style_outputs[self.layers[i]] = h
-            if(self.layers[i] in self.content_layers):
+            if(request_content and self.layers[i] in self.content_layers):
                 content_outputs[self.layers[i]] = h
 
         return style_outputs, content_outputs
@@ -96,5 +106,5 @@ class Normalization(torch.nn.Module):
         self.std = torch.tensor(std).view(-1, 1, 1)
 
     def forward(self, img):
-        # normalize img
+        # Forward Pass that normalizes images
         return (img - self.mean) / self.std
