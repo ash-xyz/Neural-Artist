@@ -1,6 +1,10 @@
 # Neural-Artist
 Changes include: L2 loss swapped with L1
 
+## Setup Training
+Using 2014 COCO Training images
+On ubuntu run setup_train.sh
+
 ## Resources
 [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576)
 [Demystifying Neural Style Transfer](https://arxiv.org/pdf/1701.01036.pdf)
