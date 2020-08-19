@@ -49,5 +49,5 @@ if __name__ == '__main__':
         if not os.path.exists(args.checkpoint_dir):
             os.mkdir(args.checkpoint_dir)
         train(args)
-    else:
+    if args.subcommand == "eval":
         stylize(args)
