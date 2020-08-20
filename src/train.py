@@ -1,6 +1,7 @@
 import argparse
 import os
 
+import numpy
 import torch
 from torch import optim
 from torch.utils.data import DataLoader
@@ -28,7 +29,7 @@ def train(args):
     # Loads transformer, vgg
     transformer = TransformerNet().to(device)
     mse_loss = torch.nn.MSELoss()
-    tv_loss = TVLoss(args.tv_weight)
+    tv_loss = TVLoss(args.tv_weight).to(device)
     optimizer = optim.Adam(transformer.parameters(), args.learning_rate)
     vgg = VGG16(requires_grad=False).to(device)
 
@@ -59,7 +60,7 @@ def train(args):
 
             # Content Loss
             content_loss = args.content_weight * \
-                mse_loss(features_y.relu3_3, features_x.relu3_3)
+                mse_loss(features_y.relu2_2, features_x.relu2_2)
 
             # Style Loss
             style_loss = 0.
@@ -69,9 +70,9 @@ def train(args):
             style_loss *= args.style_weight
 
             # Tv Loss
-            tv_loss = TVLoss(pred)
+            tv = tv_loss(pred)
 
-            total_loss = content_loss + style_loss
+            total_loss = content_loss + style_loss + tv
             total_loss.backward()
             optimizer.step()
 
