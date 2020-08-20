@@ -1,17 +1,16 @@
 import argparse
 import os
 
-from PIL import Image
-from tqdm import tqdm
 import torch
 from torch import optim
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from torchvision import transforms
+from tqdm import tqdm
 
 from src.transformer_net import TransformerNet
-from src.vgg import VGG16
-from src.utils import gram_matrix, normalize_batch
+from src.loss_network import VGG16, TVLoss
+from src.utils import gram_matrix, normalize_batch, load_image
 
 
 def train(args):
@@ -26,23 +25,18 @@ def train(args):
     train_dataset = datasets.ImageFolder(args.dataset, transform)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size)
 
+    # Loads transformer, vgg
     transformer = TransformerNet().to(device)
     mse_loss = torch.nn.MSELoss()
+    tv_loss = TVLoss(args.tv_weight)
     optimizer = optim.Adam(transformer.parameters(), args.learning_rate)
-
     vgg = VGG16(requires_grad=False).to(device)
 
-    style_transform = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Lambda(lambda x: x.mul(255))
-    ])
+    # Loads style image
+    style = load_image(args.style, args.batch_size).to(device)
 
-    style = Image.open(args.style)
-    style = style_transform(style)
-    style = style.repeat(args.batch_size, 1, 1, 1).to(device)
-
+    # Computes style
     features_style = vgg(normalize_batch(style))
-
     gram_style = [gram_matrix(y) for y in features_style]
 
     for epoch in range(args.epochs):
@@ -56,21 +50,26 @@ def train(args):
 
             optimizer.zero_grad()
 
-            y = transformer(x)
-            y = normalize_batch(y)
+            pred = transformer(x)
+            y = normalize_batch(pred)
             x = normalize_batch(x)
 
             features_y = vgg(y)
             features_x = vgg(x)
 
+            # Content Loss
             content_loss = args.content_weight * \
                 mse_loss(features_y.relu3_3, features_x.relu3_3)
 
+            # Style Loss
             style_loss = 0.
             for ft_y, gm_s in zip(features_y, gram_style):
                 gm_y = gram_matrix(ft_y)
                 style_loss += mse_loss(gm_y, gm_s[:n_batch, :, :])
             style_loss *= args.style_weight
+
+            # Tv Loss
+            tv_loss = TVLoss(pred)
 
             total_loss = content_loss + style_loss
             total_loss.backward()

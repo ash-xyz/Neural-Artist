@@ -1,4 +1,7 @@
 import torch
+from torchvision import transforms
+from PIL import Image
+
 
 def normalize_batch(batch):
     """Normalize batch using ImageNet mean and std
@@ -12,6 +15,34 @@ def normalize_batch(batch):
     batch = batch.div_(255.0)
 
     return (batch - mean) / std
+
+
+def load_image(image_path, batch_size=1):
+    """Loads an image
+    Args:
+        image_path: location and name of the image
+        batch_size: Creates a batch images consisting of the same image, defaults to 1 with a shape 1,C,H,W
+    Returns:
+        image: A Tensor of size B,C,H,W
+    """
+    image = Image.open(image_path)
+    transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Lambda(lambda x: x.mul(255))])
+    image = transform(image)
+    image = image.repeat(batch_size, 1, 1, 1)
+    return image
+
+
+def save_image(out, image_path):
+    """Turns a tensor into an image and saves it
+    Args:
+        out: tensor of shape: B, C, H, W
+        image_path: directory and name of the image with an appropriate file extension(e.g .jpg or .png)
+    """
+    img = out[0].clone().clamp(0, 255).numpy()
+    img = img.transpose(1, 2, 0).astype('uint8')
+    img = Image.fromarray(img)
+    img.save(image_path)
 
 
 def gram_matrix(tensor):
