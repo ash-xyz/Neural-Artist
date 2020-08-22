@@ -4,7 +4,7 @@ import torch
 from torch import nn
 from torchvision import models
 
-
+"""
 class VGG16(nn.Module):
     def __init__(self, requires_grad=False):
         super(VGG16, self).__init__()
@@ -39,10 +39,60 @@ class VGG16(nn.Module):
             'VGGOutputs', ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
         out = vgg_outputs(h_relu1_2, h_relu2_2, h_relu3_3, h_relu4_3)
         return out
+"""
+
+"""
+class VGG19(nn.Module):
+    def __init__(self, requires_grad=False):
+        super(VGG19, self).__init__()
+
+        self.features = models.vgg19(pretrained=True).features
+        self.layers = {'1': 'relu1_1', '6': 'relu2_1',
+                       '11': 'relu3_1', '20': 'relu4_1', '29': 'relu5_1'}
+        # Gets largest layer number
+        self.largest_layer = max([int(key) for key in self.layers.keys()])
+        if not requires_grad:
+            for param in self.parameters():
+                param.requires_grad = False
+
+    def forward(self, X):
+        features = {}
+        for name, layer in self.features._modules.items():
+            X = layer(X)
+            if name in self.layers:
+                features[self.layers[name]] = X
+                if(name == self.largest_layer):
+                    break
+        return features
+"""
+
+class VGG16(nn.Module):
+    def __init__(self, requires_grad=False):
+        super(VGG16, self).__init__()
+
+        self.features = models.vgg16(pretrained=True).features
+        self.layers = {'3': 'relu1_2', '8': 'relu2_2',
+                       '15': 'relu3_3', '22': 'relu4_3'}
+        # Gets largest layer number
+        self.largest_layer = max([int(key) for key in self.layers.keys()])
+        if not requires_grad:
+            for param in self.parameters():
+                param.requires_grad = False
+
+    def forward(self, X):
+        features = {}
+        for name, layer in self.features._modules.items():
+            X = layer(X)
+            if name in self.layers:
+                features[self.layers[name]] = X
+                if(name == self.largest_layer):
+                    break
+        return features
 
 
 class TVLoss(nn.Module):
     """Adapted from https://github.com/jxgu1016/Total_Variation_Loss.pytorch"""
+
     def __init__(self, TVLoss_weight=1):
         super(TVLoss, self).__init__()
         self.TVLoss_weight = TVLoss_weight

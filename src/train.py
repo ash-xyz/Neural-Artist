@@ -38,14 +38,15 @@ def train(args):
 
     # Computes style
     features_style = vgg(normalize_batch(style))
-    gram_style = [gram_matrix(y) for y in features_style]
+    gram_style = [gram_matrix(y)
+                  for _, y in features_style.items()]
 
     for epoch in range(args.epochs):
         transformer.train()
         agg_content_loss = 0.
         agg_style_loss = 0.
 
-        for batch_id, (x, _) in tqdm(enumerate(train_loader), unit='batch'):
+        for batch_id, (x, _) in tqdm(enumerate(train_loader), unit=' batches'):
             x = x.to(device)
             n_batch = len(x)
 
@@ -60,10 +61,12 @@ def train(args):
 
             # Content Loss
             content_loss = args.content_weight * \
-                mse_loss(features_y.relu2_2, features_x.relu2_2)
+                mse_loss(features_y['relu3_3'], features_x['relu3_3'])
 
             # Style Loss
-            style_loss = 0.
+            style_loss = 0.0
+            features_y = [feature for _,
+                          feature in features_y.items()]
             for ft_y, gm_s in zip(features_y, gram_style):
                 gm_y = gram_matrix(ft_y)
                 style_loss += mse_loss(gm_y, gm_s[:n_batch, :, :])
