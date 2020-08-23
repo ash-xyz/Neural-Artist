@@ -32,13 +32,14 @@ def webcam(args):
     with torch.no_grad():
         while True:
             torch.cuda.empty_cache()
-            ret, frame = cam.read()
+            success, frame = cam.read()
 
             # Image preprocessing
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = preprocess(frame)
             frame = frame.unsqueeze(0).to(device)
 
+            # Feed Through Model
             frame = transformer(frame)
 
             # Image deprocessing
