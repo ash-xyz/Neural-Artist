@@ -37,7 +37,7 @@ def train(args):
     style = load_image(args.style, args.batch_size).to(device)
 
     # Computes style
-    features_style = vgg(normalize_batch(style))
+    features_style = vgg(normalize_batch(style, args.norm_range))
     gram_style = [gram_matrix(y)
                   for _, y in features_style.items()]
 
@@ -53,8 +53,8 @@ def train(args):
             optimizer.zero_grad()
 
             pred = transformer(x)
-            y = normalize_batch(pred)
-            x = normalize_batch(x)
+            y = normalize_batch(pred, args.norm_range)
+            x = normalize_batch(x, args.norm_range)
 
             features_y = vgg(y)
             features_x = vgg(x)

@@ -3,18 +3,22 @@ from torchvision import transforms
 from PIL import Image
 
 
-def normalize_batch(batch):
+def normalize_batch(batch, norm_range=False):
     """Normalize batch using ImageNet mean and std
     Args:
         batch: batch of images, shape: b, ch, h, w
+        norm_range: If true Outputs a Tensor of range (0,1) Otherwise returns a tensor of 0,255
     Returns:
         Normalized batch
     """
-    mean = batch.new_tensor([0.485, 0.456, 0.406]).view(-1, 1, 1)
-    std = batch.new_tensor([0.229, 0.224, 0.225]).view(-1, 1, 1)
-    batch = batch.div_(255.0)
-
-    return (batch - mean) / std
+    if norm_range == False:
+        mean = batch.new_tensor([0.485, 0.456, 0.406]).view(-1, 1, 1)
+        std = batch.new_tensor([0.229, 0.224, 0.225]).view(-1, 1, 1)
+        batch = batch.div_(255.0)
+        return (batch - mean) / std
+    else:
+        mean = batch.new_tensor([123.68, 116.78, 103.94]).view(-1, 1, 1)
+        return (batch - mean)
 
 
 def load_image(image_path, batch_size=1):
