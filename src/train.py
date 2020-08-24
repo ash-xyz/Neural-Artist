@@ -53,10 +53,16 @@ def train(args):
     gram_style = [gram_matrix(y)
                   for _, y in features_style.items()]
 
+    # Save paths
+    style_name = args.style.split('/')[-1].split('.')[0]
+    checkpoint_file = os.path.join(args.checkpoint_dir,
+                                   '{}.pth'.format(style_name))
+
+    # Training Algorithm
     for epoch in range(args.epochs):
         transformer.train()
-        agg_content_loss = 0.
-        agg_style_loss = 0.
+        c_loss = 0.
+        s_loss = 0.
 
         for batch_id, (x, _) in tqdm(enumerate(train_loader), unit=' batches'):
             x = x.to(device)
@@ -87,31 +93,34 @@ def train(args):
             # Tv Loss
             tv = tv_loss(pred)
 
+            # Back Propogation
             total_loss = content_loss + style_loss + tv
             total_loss.backward()
             optimizer.step()
 
-            agg_content_loss += content_loss.item()
-            agg_style_loss += style_loss.item()
+            c_loss += content_loss.item()
+            s_loss += style_loss.item()
 
             if (batch_id + 1) % args.log_interval == 0:
                 tqdm.write('[{}] ({})\t'
                            'content: {:.6f}\t'
                            'style: {:.6f}\t'
                            'total: {:.6f}'.format(epoch+1, batch_id+1,
-                                                  agg_content_loss /
+                                                  c_loss /
                                                   (batch_id + 1),
-                                                  agg_style_loss /
+                                                  s_loss /
                                                   (batch_id + 1),
-                                                  (agg_content_loss + agg_style_loss) / (batch_id + 1)))
+                                                  (c_loss + s_loss) / (batch_id + 1)))
 
+            # Saves a Checkpoint
             if (batch_id + 1) % args.save_interval == 0:
                 transformer.eval().cpu()
-                style_name = args.style.split('/')[-1].split('.')[0]
-                checkpoint_file = os.path.join(args.checkpoint_dir,
-                                               '{}.pth'.format(style_name))
 
                 tqdm.write('Checkpoint {}'.format(checkpoint_file))
                 torch.save(transformer.state_dict(), checkpoint_file)
 
                 transformer.to(device).train()
+    # Save Model
+    transformer.eval().cpu()
+    torch.save(transformer.state_dict(), checkpoint_file)
+    print("Finshed! Trained Model saved at", checkpoint_file)
