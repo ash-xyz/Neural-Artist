@@ -4,6 +4,7 @@ from src.transformer_net import TransformerNet
 import cv2
 from tqdm import tqdm
 import numpy as np
+import os
 
 
 def transform_video(args):
@@ -29,10 +30,16 @@ def transform_video(args):
     fps = video.get(cv2.CAP_PROP_FPS)
     frame_count = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
 
+    # Video Output Setup
+    style_name = args.content.split('/')[-1].split('.')[0]
+    checkpoint_file = os.path.join(args.output_dir,
+                                   '{}.mp4'.format(style_name))
+    tqdm.write('Checkpoint {}'.format(checkpoint_file))
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
+    vout = cv2.VideoWriter(checkpoint_file, fourcc, fps, (width, height))
+
     # Stylizing Frame
     print("Stylizing Frames:")
-    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v')
-    vout = cv2.VideoWriter("out.mp4", fourcc, fps, (width, height))
     with torch.no_grad():
         for i in tqdm(range(frame_count)):
             torch.cuda.empty_cache()
