@@ -16,7 +16,7 @@ def transform_video(args):
     transformer = TransformerNet()
     state_dict = torch.load(args.model)
     transformer.load_state_dict(state_dict)
-    transformer.to(device)
+    transformer.eval().to(device)
 
     # Image Transforms Preprocessing
     preprocess = transforms.Compose(

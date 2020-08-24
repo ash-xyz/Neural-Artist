@@ -8,8 +8,8 @@ def export(args):
     """Exports pytorch model to be used as .onnx """
     # Loads Pytorch Model
     transformer = TransformerNet()
-    state_dict = torch.load(args.model)
-    transformer.load_state_dict(state_dict)
+    transformer.load_state_dict(torch.load(args.model))
+    transformer.eval()
 
     # Gets save_path name
     model_name = args.model.split('/')[-1].split('.')[0]

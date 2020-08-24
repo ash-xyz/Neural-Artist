@@ -19,7 +19,7 @@ def stylize(args):
 
         # Load Model Weights
         style_model.load_state_dict(state_dict)
-        style_model.to(device)
+        style_model.eval().to(device)
 
         # Forward through Image Transformation Network
         out = style_model(content).cpu()
