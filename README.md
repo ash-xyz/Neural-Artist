@@ -9,12 +9,6 @@ On ubuntu run setup_train.sh
 
 
 ## Videos
-```python style.py video --model models/style_cubist.pth --content images/content/blackpink.mp4 --output-dir images/results```
-
-Merge Audio
-```ffmpeg -i images/results/blackpink.mp4 -i audio.mp3 -c copy output.mp4```
-
-
 <p align = 'center'>K-pop is in, right?</p>
 <p align = 'center'>
 <img src = 'images/style/cubist.jpg' height = '246px'>
@@ -24,6 +18,36 @@ Merge Audio
 <p align = 'center'>
 It took 22 minutes on a GTX 1080 to style the full (1920x1080) video by <a href = 'https://www.youtube.com/watch?v=32si5cfrCNc'>Black Pink</a>. Full video <a href = 'https://drive.google.com/file/d/1HSOVhgkP1omsjxhPrXpJxRWzSaR24Tss/view?usp=sharing'>here</a>.
 </p>
+
+### Evaluating Models on Videos
+
+You can produce a simple mp4 video using the following command:
+```bash
+python style.py video --model {path to model} --content {path to content video} --output-dir {output path} --show-frame {True/False, shows current Frame being processed}
+```
+Example:
+```bash
+python style.py video --model models/style_cubist.pth --content images/content/blackpink.mp4 --output-dir images/results
+```
+
+### Audio
+Audio isn't processed with opencv, so you'll have to use [ffmpeg](https://ffmpeg.org/) if you want audio added to your video.
+```
+ffmpeg -i {input mp4} -i {input audio mp4 or mp3} -c copy output.mp4
+```
+
+Example:
+```
+ffmpeg -i images/results/blackpink.mp4 -i audio.mp3 -c copy output.mp4
+```
+
+## Webcam
+
+# INSERT GIFS
+
+### Evaluating Models using Webcams
+You can produce live webcam styling using the following:
+
 
 ## Acknowledgements
 * Original Algorithm by Leon A. Gatys: [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576)
