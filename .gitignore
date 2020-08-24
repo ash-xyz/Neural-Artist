@@ -1,6 +1,6 @@
 .vscode/
 __pycache__/
-thing/
 models/
 data/
-Failures/
+__init__.pyc
+train.pyc
