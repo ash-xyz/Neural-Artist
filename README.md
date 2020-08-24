@@ -11,6 +11,14 @@ A fully featured implementation of Neural Style that includes videos, webcams an
 ## Contents
     TODO
 
+## Image Stylization
+```bash
+python style.py --content {content_image} --model {path to model} --out {output image}
+```
+Example:
+```bash
+python style.py --content content.jpg --model model.pth --out output.jpg
+```
 ## Training
 
 ### Setup
@@ -28,6 +36,8 @@ python style.py train --style images/style/wave_2.jpg --dataset data --checkpoin
   * Model Customization, checkout [src/train.py](src/train.py)
     * You can also choose between VGG16 and VGG19
     * You can also choose specific style layers and content layers
+  * Choose weights for Style, Content & TV Loss
+  * Choose Loss Network input range (0,255) or (0,1)
   * Find out about Flags for hyperparameters [here](DOCS.md)
 
 There are a multitude of variations you can do for training that will result in major differences.
@@ -49,7 +59,7 @@ For Example using the [256x256 Udnie](images/style/udnie_small.jpg) results in s
 </p>
 
 
-## Videos
+## Video Stylization
 <p align = 'center'>K-pop is in, right?</p>
 <p align = 'center'>
 <img src = 'images/style/cubist.jpg' height = '246px'>
@@ -82,7 +92,7 @@ Example:
 ffmpeg -i images/results/blackpink.mp4 -i audio.mp3 -c copy output.mp4
 ```
 
-## Webcam
+## Webcam Stylization
 
 <p align = 'center'>
 <a href = 'images/style/udnie.jpg'><img src = 'images/results/udnie_cam.gif' height = '246px'></a>
@@ -103,6 +113,16 @@ Example
 python style.py cam --model models/udnie.pth
 ```
 
+## Export to Onnx
+For wide platform compatibility I've added the option to export to Onnx
+
+```bash
+python style.py export --model {model path} --output-dir {output path}
+```
+Example:
+```bash
+python style.py export --model models/udnie.pth
+```
 
 ## Acknowledgements
 * Original Algorithm by Leon A. Gatys: [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576)
@@ -113,9 +133,11 @@ python style.py cam --model models/udnie.pth
 * I got the cubist painting from [hzy46](https://github.com/hzy46/fast-neural-style-tensorflow), I don't know where it's from unfortunately.
 * README styling influenced by [Lengstrom](https://github.com/lengstrom)
 
-## Other Transformations
+## Example Image Transformations
 
+<a href = "https://images.musement.com/cover/0002/49/big-ben-westminster-bridge-on-river-thames-in-london-jpg_header-148518.jpeg?w=1200&h=630&q=95&fit=crop">
 <p align = 'center'> London</p>
+</a>
 <p align = 'center'>
 <img src = 'images/content/london.jpeg' width = '714px' >
 <img src = 'images/style/cubist.jpg' height = '246px'>
