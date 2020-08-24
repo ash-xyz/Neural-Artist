@@ -1,5 +1,3 @@
-import argparse
-
 import torch
 
 from src.transformer_net import TransformerNet
