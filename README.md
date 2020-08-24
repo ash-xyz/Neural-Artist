@@ -1,11 +1,52 @@
-# Neural-Artist
-Changes include: L2 loss swapped with L1
+# <a href = 'https://pytorch.org/'><img src = 'images/content/pytorch.png' height = '50px'></a> Neural-Artist, Feed-Forward Styling in Pytorch
+A fully featured implementation of Neural Style that includes videos, webcams and web.
+<p align = 'center'>Candy x Obrien Centre, University College Dublin</p>
+<p align = 'center'>
+<img src = 'images/style/candy.jpg' height = '246px'>
+<img src = 'images/content/obrien.jpg' height = '246px'>
+<a href = 'images/results/obrien_candy.jpg'><img src = 'images/results/obrien_candy.jpg' width = '689px'></a>
+</p>
+<p align = 'center'>It took 2.5 hours to train the feedforward algorithm on a gtx 1080, and less than 100ms to test on the Obrien Center</p>
 
-## Setup Training
-Using 2014 COCO Training images
-On ubuntu run setup_train.sh
+## Contents
+    TODO
 
-```python style.py train --style images/style/wave_2.jpg --dataset data --checkpoint-dir models```
+## Training
+
+### Setup
+* Run ```Pip install requirments.txt``` in a new env
+* Download data using ```setup_train.sh```
+
+### Running Training
+For simple Training run:
+
+```bash
+python style.py train --style images/style/wave_2.jpg --dataset data --checkpoint-dir models
+```
+
+### Customization
+  * Model Customization, checkout [src/train.py](src/train.py)
+    * You can also choose between VGG16 and VGG19
+    * You can also choose specific style layers and content layers
+  * Find out about Flags for hyperparameters [here](DOCS.md)
+
+There are a multitude of variations you can do for training that will result in major differences.
+
+For Example using the [256x256 Udnie](images/style/udnie_small.jpg) results in smaller feature transformers than the larger [512x512 Udnie](images/style/udnie.jpg)
+
+<p align = 'center'>Small Feature Udnie</p>
+<p align = 'center'>
+<img src = 'images/style/udnie_small.jpg' height = '246px'>
+<img src = 'images/content/obrien.jpg' height = '246px'>
+<a href = 'images/results/obrien_udnie_small.jpg'><img src = 'images/results/obrien_udnie_small.jpg' width = '689px'></a>
+</p>
+
+<p align = 'center'>Large Feature Udnie</p>
+<p align = 'center'>
+<img src = 'images/style/udnie.jpg' height = '246px'>
+<img src = 'images/content/obrien.jpg' height = '246px'>
+<a href = 'images/results/obrien_udnie.jpg'><img src = 'images/results/obrien_udnie.jpg' width = '689px'></a>
+</p>
 
 
 ## Videos
@@ -19,7 +60,7 @@ On ubuntu run setup_train.sh
 It took 22 minutes on a GTX 1080 to style the full (1920x1080) video by <a href = 'https://www.youtube.com/watch?v=32si5cfrCNc'>Black Pink</a>. Full video <a href = 'https://drive.google.com/file/d/1HSOVhgkP1omsjxhPrXpJxRWzSaR24Tss/view?usp=sharing'>here</a>.
 </p>
 
-### Evaluating Models on Videos
+### How to Video:
 
 You can produce a simple mp4 video using the following command:
 ```bash
@@ -43,11 +84,23 @@ ffmpeg -i images/results/blackpink.mp4 -i audio.mp3 -c copy output.mp4
 
 ## Webcam
 
-# INSERT GIFS
+<p align = 'center'>
+<a href = 'images/style/udnie.jpg'><img src = 'images/results/udnie_cam.gif' height = '246px'></a>
+<a href = 'images/style/wave_light.jpg'><img src = 'images/results/wave_cam.gif' height = '246px'></a>
+<a href = 'images/style/candy.jpg'><img src = 'images/results/candy_cam.gif' height = '246px'></a>
+<a href = 'images/style/cubist.jpg'><img src = 'images/results/cubist_cam.gif' height = '245px'></a>
+</p>
+<p align = 'center'><a href = 'images/style/udnie.jpg'>Udnie</a> <a href = 'images/style/wave_light.jpg'>Wave</a></p>
+<p align = 'center'><a href = 'images/style/candy.jpg'>Candy</a> <a href = 'images/style/cubist.jpg'>Cubist</a></p>
 
-### Evaluating Models using Webcams
+### How to Webcam:
 You can produce live webcam styling using the following:
 ```bash
+python style.py cam --model {path to model} --width {Your chosen camera width} --height {Your chosen camera height}
+```
+Example
+```bash
+python style.py cam --model models/udnie.pth
 ```
 
 
@@ -59,3 +112,23 @@ You can produce live webcam styling using the following:
 * [Pytorch example library](https://github.com/pytorch/examples/blob/master/fast_neural_style) I used for debugging(Normalizing input completely flew over my head 🙃)
 * I got the cubist painting from [hzy46](https://github.com/hzy46/fast-neural-style-tensorflow), I don't know where it's from unfortunately.
 * README styling influenced by [Lengstrom](https://github.com/lengstrom)
+
+## Other Transformations
+
+<p align = 'center'> London</p>
+<p align = 'center'>
+<img src = 'images/content/london.jpeg' width = '714px' >
+<img src = 'images/style/cubist.jpg' height = '246px'>
+<img src = 'images/results/london_cubist.jpg' height = '246px'>
+<img src = 'images/style/udnie.jpg' height = '246px'>
+<img src = 'images/results/london_udnie.jpg' height = '246px'>
+<img src = 'images/style/udnie_small.jpg' height = '246px'>
+<img src = 'images/results/london_udnie_small.jpg' height = '246px'>
+<img src = 'images/style/candy.jpg' height = '246px'>
+<img src = 'images/results/london_candy.jpg' height = '246px'>
+<img src = 'images/style/rain_princess.jpg' height = '246px'>
+<img src = 'images/results/london_rain_princess.jpg' height = '246px'>
+<img src = 'images/style/wave_light.jpg' height = '246px' width = '256'>
+<img src = 'images/results/london_wave.jpg' height = '246px'>
+
+</p>
