@@ -65,7 +65,7 @@ if __name__ == '__main__':
                                 help='Shows current frame being processed')
 
     export_arg_parser = subparser.add_parser(
-        "export", help="parser for onnyx exports")
+        "export", help="parser for onnx exports")
     export_arg_parser.add_argument('--model', type=str, required=True,
                                    help="Path to style model")
     export_arg_parser.add_argument('--output-dir', type=str, default='models',

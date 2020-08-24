@@ -23,7 +23,7 @@ Table of contents
   * [Adding Audio](#audio)
 * [Webcam Stylization](#webcam-stylization)
   * [How to](#how-to-webcam)
-* [Export To Onnyx](#export-to-onnx)
+* [Export To Onnx](#export-to-onnx)
 * [Cool Stylized Examples](#example-image-transformations)
 <!--te-->
 Image Stylization

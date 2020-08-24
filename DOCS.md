@@ -43,7 +43,7 @@ python style.py {subparser} {{flags}}
 * `--output-dir`: Path to output video, e.g. `images/results`
 * `--show-frame`: Show frames as they're being processed, default is False
 
-## Export to Onnyx
+## Export to Onnx
 ### Subparser: `export`
 ### Flags
 * `--model`: Path to model
