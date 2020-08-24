@@ -6,6 +6,7 @@ from src.train import train
 from src.eval import stylize
 from src.cam import webcam
 from src.video import transform_video
+from src.export import export
 
 if __name__ == '__main__':
     main_parser = argparse.ArgumentParser()
@@ -23,7 +24,7 @@ if __name__ == '__main__':
                                   help='Size of training images')
     train_arg_parser.add_argument('--content-weight', type=float, default=1,
                                   help='Weight for content loss')
-    train_arg_parser.add_argument('--style-weight', type=float, default=200,
+    train_arg_parser.add_argument('--style-weight', type=float, default=2e2,
                                   help='Weight for style loss')
     train_arg_parser.add_argument('--tv-weight', type=float, default=1e-6,
                                   help='Weight for tv loss')
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     train_arg_parser.add_argument('--log-interval', type=int, default=500)
     train_arg_parser.add_argument('--save-interval', type=int, default=2000)
     train_arg_parser.add_argument(
-        '--checkpoint-dir', type=str, default='checkpoints')
+        '--checkpoint-dir', type=str, default='models')
 
     eval_arg_parser = subparser.add_parser(
         "eval", help="parser for stylizing arguments")
@@ -63,6 +64,12 @@ if __name__ == '__main__':
     vid_arg_parser.add_argument('--show-frame', type=bool, default=False,
                                 help='Shows current frame being processed')
 
+    export_arg_parser = subparser.add_parser(
+        "export", help="parser for onnyx exports")
+    export_arg_parser.add_argument('--model', type=str, required=True,
+                                   help="Path to style model")
+    export_arg_parser.add_argument('--output-dir', type=str, default='models',
+                                   help="output path")
     args = main_parser.parse_args()
 
     if args.subcommand is None:
@@ -78,3 +85,5 @@ if __name__ == '__main__':
         webcam(args)
     if args.subcommand == "video":
         transform_video(args)
+    if args.subcommand == "export":
+        export(args)
