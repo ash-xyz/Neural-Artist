@@ -10,8 +10,15 @@ from torchvision import transforms
 from tqdm import tqdm
 
 from src.transformer_net import TransformerNet
-from src.loss_network import VGG16, TVLoss
+from src.loss_network import VGG16, VGG19, TVLoss
 from src.utils import gram_matrix, normalize_batch, load_image
+
+LOSS_NETWORK = 'vgg16'
+#LOSS_NETWORK = 'vgg19'
+
+# Make sure style layers and content layers exist in the Loss Network
+STYLE_LAYERS = ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3']
+CONTENT_LAYER = 'relu3_3'
 
 
 def train(args):
@@ -31,13 +38,18 @@ def train(args):
     mse_loss = torch.nn.MSELoss()
     tv_loss = TVLoss(args.tv_weight).to(device)
     optimizer = optim.Adam(transformer.parameters(), args.learning_rate)
-    vgg = VGG16(requires_grad=False).to(device)
+    if LOSS_NETWORK == 'vgg16':
+        vgg = VGG16(STYLE_LAYERS, CONTENT_LAYER,
+                    requires_grad=False).to(device)
+    else:
+        vgg = VGG19(STYLE_LAYERS, CONTENT_LAYER,
+                    requires_grad=False).to(device)
 
     # Loads style image
     style = load_image(args.style, args.batch_size).to(device)
 
     # Computes style
-    features_style = vgg(normalize_batch(style, args.norm_range))
+    features_style, _ = vgg(normalize_batch(style, args.norm_range))
     gram_style = [gram_matrix(y)
                   for _, y in features_style.items()]
 
@@ -56,12 +68,12 @@ def train(args):
             y = normalize_batch(pred, args.norm_range)
             x = normalize_batch(x, args.norm_range)
 
-            features_y = vgg(y)
-            features_x = vgg(x)
+            features_y, content_y = vgg(y)
+            features_x, content_x = vgg(x)
 
             # Content Loss
             content_loss = args.content_weight * \
-                mse_loss(features_y['relu3_3'], features_x['relu3_3'])
+                mse_loss(content_y[CONTENT_LAYER], content_x[CONTENT_LAYER])
 
             # Style Loss
             style_loss = 0.0
