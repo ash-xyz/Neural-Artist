@@ -1,93 +1,96 @@
-from collections import namedtuple
-
 import torch
 from torch import nn
 from torchvision import models
 
-"""
-class VGG16(nn.Module):
-    def __init__(self, requires_grad=False):
-        super(VGG16, self).__init__()
+VGG19_LAYERS = {'0': 'conv1_1', '1': 'relu1_1',
+                '2': 'conv1_2', '3': 'relu1_2',
+                '5': 'conv2_1', '6': 'relu2_1',
+                '7': 'conv2_2', '8': 'relu2_2',
+                '10': 'conv3_1', '11': 'relu3_1',
+                '12': 'conv3_2', '13': 'relu3_2',
+                '14': 'conv3_3', '15': 'relu3_3',
+                '16': 'conv3_4', '17': 'relu3_4',
+                '19': 'conv4_1', '20': 'relu4_1',
+                '21': 'conv4_2', '22': 'relu4_2',
+                '23': 'conv4_3', '24': 'relu4_3',
+                '25': 'conv4_4', '26': 'relu4_4',
+                '28': 'conv5_1', '29': 'relu5_1'}
 
-        vgg_pretrained_features = models.vgg16(pretrained=True).features
-        self.slice1 = nn.Sequential()
-        self.slice2 = nn.Sequential()
-        self.slice3 = nn.Sequential()
-        self.slice4 = nn.Sequential()
-        for x in range(4):
-            self.slice1.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(4, 9):
-            self.slice2.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(9, 16):
-            self.slice3.add_module(str(x), vgg_pretrained_features[x])
-        for x in range(16, 23):
-            self.slice4.add_module(str(x), vgg_pretrained_features[x])
-        if not requires_grad:
-            for param in self.parameters():
-                param.requires_grad = False
+VGG16_LAYERS = {'0': 'conv1_1', '1': 'relu1_1',
+                '2': 'conv1_2', '3': 'relu1_2',
+                '5': 'conv2_1', '6': 'relu2_1',
+                '7': 'conv2_2', '8': 'relu2_2',
+                '10': 'conv3_1', '11': 'relu3_1',
+                '12': 'conv3_2', '13': 'relu3_2',
+                '14': 'conv3_3', '15': 'relu3_3',
+                '17': 'conv4_1', '18': 'relu4_1',
+                '19': 'conv4_2', '20': 'relu4_2',
+                '21': 'conv4_3', '22': 'relu4_3',
+                '24': 'conv5_1', '25': 'relu5_1',
+                '26': 'conv5_2', '27': 'relu5_2'}
 
-    def forward(self, X):
-        h = self.slice1(X)
-        h_relu1_2 = h
-        h = self.slice2(h)
-        h_relu2_2 = h
-        h = self.slice3(h)
-        h_relu3_3 = h
-        h = self.slice4(h)
-        h_relu4_3 = h
-        vgg_outputs = namedtuple(
-            'VGGOutputs', ['relu1_2', 'relu2_2', 'relu3_3', 'relu4_3'])
-        out = vgg_outputs(h_relu1_2, h_relu2_2, h_relu3_3, h_relu4_3)
-        return out
-"""
 
-"""
 class VGG19(nn.Module):
-    def __init__(self, requires_grad=False):
+    def __init__(self, style_layers, content_layer, requires_grad=False):
         super(VGG19, self).__init__()
 
         self.features = models.vgg19(pretrained=True).features
-        self.layers = {'1': 'relu1_1', '6': 'relu2_1',
-                       '11': 'relu3_1', '20': 'relu4_1', '29': 'relu5_1'}
+
         # Gets largest layer number
-        self.largest_layer = max([int(key) for key in self.layers.keys()])
+        self.largest_layer = max([int(key) for key in VGG16_LAYERS.keys(
+        ) if VGG19_LAYERS[key] in style_layers or VGG19_LAYERS[key] == content_layer])
+
+        self.content_layer = content_layer
+        self.style_layers = style_layers
+
         if not requires_grad:
             for param in self.parameters():
                 param.requires_grad = False
 
     def forward(self, X):
-        features = {}
+        style_features = {}
+        content_feature = {}
+        features = {'content': 'hello', 'style': {}}
         for name, layer in self.features._modules.items():
             X = layer(X)
-            if name in self.layers:
-                features[self.layers[name]] = X
-                if(name == self.largest_layer):
-                    break
-        return features
-"""
+            if name in VGG19_LAYERS and VGG19_LAYERS[name] in self.style_layers:
+                style_features[VGG19_LAYERS[name]] = X
+            if name in VGG19_LAYERS and VGG19_LAYERS[name] == self.content_layer:
+                content_feature[VGG19_LAYERS[name]] = X
+            if(int(name) == self.largest_layer):
+                break
+        return style_features, content_feature
+
 
 class VGG16(nn.Module):
-    def __init__(self, requires_grad=False):
+    def __init__(self, style_layers, content_layer, requires_grad=False):
         super(VGG16, self).__init__()
 
-        self.features = models.vgg16(pretrained=True).features
-        self.layers = {'3': 'relu1_2', '8': 'relu2_2',
-                       '15': 'relu3_3', '22': 'relu4_3'}
+        self.features = models.vgg19(pretrained=True).features
+
         # Gets largest layer number
-        self.largest_layer = max([int(key) for key in self.layers.keys()])
+        self.largest_layer = max([int(key) for key in VGG16_LAYERS.keys(
+        ) if VGG16_LAYERS[key] in style_layers or VGG16_LAYERS[key] == content_layer])
+
+        self.content_layer = content_layer
+        self.style_layers = style_layers
+
         if not requires_grad:
             for param in self.parameters():
                 param.requires_grad = False
 
     def forward(self, X):
-        features = {}
+        style_features = {}
+        content_feature = {}
         for name, layer in self.features._modules.items():
             X = layer(X)
-            if name in self.layers:
-                features[self.layers[name]] = X
-                if(name == self.largest_layer):
-                    break
-        return features
+            if name in VGG16_LAYERS and VGG16_LAYERS[name] in self.style_layers:
+                style_features[VGG16_LAYERS[name]] = X
+            if name in VGG16_LAYERS and VGG16_LAYERS[name] == self.content_layer:
+                content_feature[VGG16_LAYERS[name]] = X
+            if(int(name) == self.largest_layer):
+                break
+        return style_features, content_feature
 
 
 class TVLoss(nn.Module):
