@@ -1,17 +1,33 @@
 # <a href = 'https://pytorch.org/'><img src = 'images/content/pytorch.png' height = '50px'></a> Neural-Artist, Feed-Forward Styling in Pytorch
-A fully featured implementation of Neural Style that includes videos, webcams and web.
+A fully featured implementation of Neural Style that includes videos, webcam and web stylization.
 <p align = 'center'>Candy x Obrien Centre, University College Dublin</p>
 <p align = 'center'>
 <img src = 'images/style/candy.jpg' height = '246px'>
 <img src = 'images/content/obrien.jpg' height = '246px'>
 <a href = 'images/results/obrien_candy.jpg'><img src = 'images/results/obrien_candy.jpg' width = '689px'></a>
 </p>
-<p align = 'center'>It took 2.5 hours to train the feedforward algorithm on a gtx 1080, and less than 100ms to test on the Obrien Center</p>
+<p align = 'center'>It took 2.5 hours to train the feedforward algorithm on a gtx 1080, and less than 300ms to test on the 1080p Obrien Center</p>
 
-## Contents
-    TODO
+Table of contents
+=================
 
-## Image Stylization
+<!--ts-->
+* [Home](#)
+* [Image Styization](#image-stylization)
+* [Training](#training)
+  * [Setup](#setup)
+  * [Running Training](#running-training)
+  * [Customization](#customization)
+* [Video Stylization](#video-stylization)
+  * [How to](#how-to-video)
+  * [Adding Audio](#audio)
+* [Webcam Stylization](#webcam-stylization)
+  * [How to](#how-to-webcam)
+* [Export To Onnyx](#export-to-onnx)
+* [Cool Stylized Examples](#example-image-transformations)
+<!--te-->
+Image Stylization
+=================
 ```bash
 python style.py --content {content_image} --model {path to model} --out {output image}
 ```
@@ -19,20 +35,21 @@ Example:
 ```bash
 python style.py --content content.jpg --model model.pth --out output.jpg
 ```
-## Training
+Training
+=================
 
-### Setup
+## Setup
 * Run ```Pip install requirments.txt``` in a new env
 * Download data using ```setup_train.sh```
 
-### Running Training
+## Running Training
 For simple Training run:
 
 ```bash
 python style.py train --style images/style/wave_2.jpg --dataset data --checkpoint-dir models
 ```
 
-### Customization
+## Customization
   * Model Customization, checkout [src/train.py](src/train.py)
     * You can also choose between VGG16 and VGG19
     * You can also choose specific style layers and content layers
@@ -59,7 +76,8 @@ For Example using the [256x256 Udnie](images/style/udnie_small.jpg) results in s
 </p>
 
 
-## Video Stylization
+Video Stylization
+=================
 <p align = 'center'>K-pop is in, right?</p>
 <p align = 'center'>
 <img src = 'images/style/cubist.jpg' height = '246px'>
@@ -70,7 +88,7 @@ For Example using the [256x256 Udnie](images/style/udnie_small.jpg) results in s
 It took 22 minutes on a GTX 1080 to style the full (1920x1080) video by <a href = 'https://www.youtube.com/watch?v=32si5cfrCNc'>Black Pink</a>. Full video <a href = 'https://drive.google.com/file/d/1HSOVhgkP1omsjxhPrXpJxRWzSaR24Tss/view?usp=sharing'>here</a>.
 </p>
 
-### How to Video:
+## How to Video:
 
 You can produce a simple mp4 video using the following command:
 ```bash
@@ -81,7 +99,7 @@ Example:
 python style.py video --model models/style_cubist.pth --content images/content/blackpink.mp4 --output-dir images/results
 ```
 
-### Audio
+## Audio
 Audio isn't processed with opencv, so you'll have to use [ffmpeg](https://ffmpeg.org/) if you want audio added to your video.
 ```
 ffmpeg -i {input mp4} -i {input audio mp4 or mp3} -c copy output.mp4
@@ -92,7 +110,8 @@ Example:
 ffmpeg -i images/results/blackpink.mp4 -i audio.mp3 -c copy output.mp4
 ```
 
-## Webcam Stylization
+Webcam Stylization
+=================
 
 <p align = 'center'>
 <a href = 'images/style/udnie.jpg'><img src = 'images/results/udnie_cam.gif' height = '246px'></a>
@@ -113,7 +132,8 @@ Example
 python style.py cam --model models/udnie.pth
 ```
 
-## Export to Onnx
+Export to Onnx
+=================
 For wide platform compatibility I've added the option to export to Onnx
 
 ```bash
@@ -124,7 +144,8 @@ Example:
 python style.py export --model models/udnie.pth
 ```
 
-## Acknowledgements
+Acknowledgements
+=================
 * Original Algorithm by Leon A. Gatys: [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576)
 * Feedforward method developed by Justin Johnson: [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](http://cs.stanford.edu/people/jcjohns/eccv16/)
 * [Demystifying Neural Style Transfer](https://arxiv.org/pdf/1701.01036.pdf)
@@ -133,7 +154,8 @@ python style.py export --model models/udnie.pth
 * I got the cubist painting from [hzy46](https://github.com/hzy46/fast-neural-style-tensorflow), I don't know where it's from unfortunately.
 * README styling influenced by [Lengstrom](https://github.com/lengstrom)
 
-## Example Image Transformations
+Example Image Transformations
+=================
 
 <a href = "https://images.musement.com/cover/0002/49/big-ben-westminster-bridge-on-river-thames-in-london-jpg_header-148518.jpeg?w=1200&h=630&q=95&fit=crop">
 <p align = 'center'> London</p>
