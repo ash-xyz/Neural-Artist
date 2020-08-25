@@ -1,6 +1,5 @@
 .vscode/
 __pycache__/
-models/
 data/
 __init__.pyc
 train.pyc
