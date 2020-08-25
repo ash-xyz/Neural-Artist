@@ -16,5 +16,5 @@ def export(args):
     save_path = os.path.join(args.output_dir, '{}.onnx'.format(model_name))
 
     # Exports ONNX Model
-    x = torch.randn(1, 3, 1920, 1080)
+    x = torch.randn(1, 3, 'N', 'N')
     torch.onnx.export(transformer, x, save_path, opset_version=11)

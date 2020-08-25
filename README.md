@@ -6,7 +6,7 @@ A fully featured implementation of Neural Style that includes videos, webcam and
 <img src = 'images/content/obrien.jpg' height = '246px'>
 <a href = 'images/results/obrien_candy.jpg'><img src = 'images/results/obrien_candy.jpg' width = '689px'></a>
 </p>
-<p align = 'center'>It took 2.5 hours to train the feedforward algorithm on a gtx 1080, and less than 300ms to test on the 1080p Obrien Center</p>
+<p align = 'center'>It took 2.5 hours to train the feedforward algorithm on a gtx 1080, and less than 300ms to test on a 1920x1080 photo of O'Brien Centre for Science</p>
 
 Table of contents
 =================
@@ -24,10 +24,12 @@ Table of contents
 * [Webcam Stylization](#webcam-stylization)
   * [How to](#how-to-webcam)
 * [Export To Onnx](#export-to-onnx)
+* [Acknowledgments](#acknowledgements)
 * [Cool Stylized Examples](#example-image-transformations)
 <!--te-->
 Image Stylization
 =================
+Models are located in the models folder
 ```bash
 python style.py --content {content_image} --model {path to model} --out {output image}
 ```
@@ -134,7 +136,7 @@ python style.py cam --model models/udnie.pth
 
 Export to Onnx
 =================
-For wide platform compatibility I've added the option to export to Onnx
+For wide platform compatibility I've added the option to export to Onnx. I have plans to try and use ONNX.js for native on-browser stylization.
 
 ```bash
 python style.py export --model {model path} --output-dir {output path}
@@ -148,11 +150,12 @@ Acknowledgements
 =================
 * Original Algorithm by Leon A. Gatys: [A Neural Algorithm of Artistic Style](https://arxiv.org/abs/1508.06576)
 * Feedforward method developed by Justin Johnson: [Perceptual Losses for Real-Time Style Transfer and Super-Resolution](http://cs.stanford.edu/people/jcjohns/eccv16/)
+* Justin Johnson's [Original Repo](https://github.com/jcjohnson/fast-neural-style) that I used for hyperparameter optimization
 * [Demystifying Neural Style Transfer](https://arxiv.org/pdf/1701.01036.pdf)
 * Improved Fast Stylization using [Instance Normalization](https://arxiv.org/abs/1607.08022) by Dmitry Ulyanov
-* [Pytorch example library](https://github.com/pytorch/examples/blob/master/fast_neural_style) I used for debugging(Normalizing input completely flew over my head 🙃)
+* [Pytorch example library](https://github.com/pytorch/examples/blob/master/fast_neural_style) I used for implementing the auto encoder and debugging(Normalizing input completely flew over my head 🙃)
 * I got the cubist painting from [hzy46](https://github.com/hzy46/fast-neural-style-tensorflow), I don't know where it's from unfortunately.
-* README styling influenced by [Lengstrom](https://github.com/lengstrom)
+* README styling influenced by [Lengstrom](https://github.com/lengstrom) and [Justin Johnson](https://github.com/jcjohnson/fast-neural-style)
 
 Example Image Transformations
 =================
