@@ -1,5 +1,5 @@
 # <a href = 'https://pytorch.org/'><img src = 'images/content/pytorch.png' height = '50px'></a> Neural-Artist, Feed-Forward Styling in Pytorch
-A fully featured implementation of Neural Style that includes videos, webcam and web stylization.
+A fully featured implementation of Neural Style that includes videos, webcam and web stylization(Coming Soon™).
 <p align = 'center'>Candy x Obrien Centre, University College Dublin</p>
 <p align = 'center'>
 <img src = 'images/style/candy.jpg' height = '246px'>
