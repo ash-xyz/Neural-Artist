@@ -1,5 +1,5 @@
 # <a href = 'https://pytorch.org/'><img src = 'images/content/pytorch.png' height = '50px'></a> Neural-Artist, Feed-Forward Styling in Pytorch
-A fully featured implementation of Neural Style that includes videos, webcam and web stylization(Coming Soon™).
+A fully featured implementation of Neural Style that includes [videos](#video-stylization), [webcam](#webcam-stylization) and web stylization(Coming Soon™).
 <p align = 'center'>Candy x Obrien Centre, University College Dublin</p>
 <p align = 'center'>
 <img src = 'images/style/candy.jpg' height = '246px'>
@@ -136,7 +136,7 @@ python style.py cam --model models/udnie.pth
 
 Export to Onnx
 =================
-For wide platform compatibility I've added the option to export to Onnx. I have plans to try and use ONNX.js for native on-browser stylization.
+For wide platform compatibility I've added the option to export to Onnx. I have plans to try using ONNX.js for native on-browser stylization.
 
 ```bash
 python style.py export --model {model path} --output-dir {output path}
