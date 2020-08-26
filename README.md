@@ -31,18 +31,28 @@ Image Stylization
 =================
 Models are located in the models folder
 ```bash
-python style.py --content {content_image} --model {path to model} --out {output image}
+python style.py eval --content {content_image} --model {path to model} --out {output image}
 ```
 Example:
 ```bash
-python style.py --content content.jpg --model model.pth --out output.jpg
+python style.py eval --content content.jpg --model model.pth --out output.jpg
 ```
 Training
 =================
 
 ## Setup
-* Run ```Pip install requirments.txt``` in a new env
-* Download data using ```setup_train.sh```
+### Install Prerequisites
+* Install Pytorch and Torchvision
+  * Visit the [Pytorch website](https://pytorch.org/get-started/locally/) to install for your relevant OS and package manager, hence the following command:
+    * `conda install pytorch torchvision cudatoolkit=10.2 -c pytorch`
+* Install OpenCV
+  * `pip install opencv-python`
+* Install tqdm
+  * `pip install tqdm`
+### Download Training Data (Only if you intend on training a model)
+We need to download the COCO dataset.
+
+Simply run `./setup_train.sh` to download and setup the dataset.
 
 ## Running Training
 For simple Training run:
