@@ -43,7 +43,7 @@ Training
 ## Setup
 ### Install Prerequisites
 * Install Pytorch and Torchvision
-  * Visit the [Pytorch website](https://pytorch.org/get-started/locally/) to install for your relevant OS and package manager, hence the following command:
+  * Visit the [Pytorch website](https://pytorch.org/get-started/locally/) to install for your relevant OS and package manager. I used conda, hence the following command:
     * `conda install pytorch torchvision cudatoolkit=10.2 -c pytorch`
 * Install OpenCV
   * `pip install opencv-python`
