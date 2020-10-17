@@ -14,7 +14,7 @@
     "lodash": "^4.17.20",
     "ndarray": "^1.0.19",
     "ndarray-ops": "^1.2.2",
-    "onnxjs": "^0.1.7",
+    "onnxjs": "^0.1.8",
     "vue": "^2.6.11"
   },
   "devDependencies": {
