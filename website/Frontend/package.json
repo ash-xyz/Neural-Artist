@@ -11,7 +11,7 @@
     "axios": "^0.21.1",
     "blueimp-load-image": "^5.14.0",
     "core-js": "^3.6.5",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "ndarray": "^1.0.19",
     "ndarray-ops": "^1.2.2",
     "onnxjs": "^0.1.8",
